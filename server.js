@@ -96,29 +96,6 @@ app.listen(PORT, () => console.log(`server running on port: ${PORT} on ${apolloS
 
 /* Client Request:
 
-query ExampleQuery {
-  tasks{
-    id
-    name
-    completed
-  }
-}
-
-
-
-query ExampleQuery {
-  tasks {
-    id
-    name
-    user {
-      id
-      name
-      email
-    }
-  }
-}
-
-
 mutation createTask {
   createTask(input: {
     name: "task one",
@@ -131,6 +108,51 @@ mutation createTask {
       id
       name
       email
+    }
+  }
+}
+
+query getTasks {
+  tasks {
+    id
+    name
+    user {
+      id
+      name
+      email
+    }
+  }
+}
+
+query getTaskById {
+  task(taskId: 1) {
+    id
+    name
+    completed
+    user {
+      id
+      name
+    }
+  }
+}
+
+query getUsers {
+  users {
+    id
+    name
+    email
+  }
+}
+
+query getUserById {
+  user(userId: 1) {
+    id
+    name
+    email,
+    tasks {
+      id
+      name
+      completed
     }
   }
 }

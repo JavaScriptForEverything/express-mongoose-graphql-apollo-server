@@ -1,17 +1,20 @@
 ## Learing GraphQL with Express with ApolloServer
 
-###### Setup GraphQL with Express
+### Setup GraphQL with Express
 
-Install require packages
-	. $ yarn add 	express
-			apollo-server-express 		: apollo server (Server WebSocket)
-			graphql 			: Dependency of 'apollo-server-express'
+###### Install require packages:
 
-			cors 				: Enable CORS in API
+```
+$ yarn add 	express
+		apollo-server-express 		: apollo server (Server WebSocket)
+		graphql 			: Dependency of 'apollo-server-express'
 
+		cors 				: Enable CORS in API
+```
 
-``` (/data/demo.js) : Test Data
+### /data/demo.js 	: Test Data
 
+```
 exports.tasks = [
   { id: '1', name: 'Work',    	completed: true, userId: '3' },
   { id: '2', name: 'Eat',     	completed: true, userId: '1' },
@@ -29,6 +32,7 @@ exports.users = [
 ```
 
 
+### server.js
 ```
 const exporess = require('express')
 const cors = require('cors')
@@ -89,20 +93,20 @@ app.listen(PORT, () => console.log(`server running on port: ${PORT} on ${apolloS
 
 ```
 
-To Run server and access ApolloServer
+
+###### To Run server and access ApolloServer
 	. $ nodemon server.js
 
 	. (Browser) 	GET 	http://localhost:5000 			: Server Root
 	.           	GET 	http://localhost:5000/graphql 		: GraphQL Endpoint
 
 
-###### Get tasks from Query
+### Get tasks from Query
 
-Run the Query in GraphQL Server's client Request Section
-	. Ctrl + Enter 		: to run the Query
+	Run the Query in GraphQL Server's client Request Section
+		. Ctrl + Enter 		: to run the Query
 
-``` (Client Request)
-
+```
 query ExampleQuery {
   tasks{
     id
@@ -113,7 +117,7 @@ query ExampleQuery {
 ```
 
 
-###### Get Single task By ID
+### Get Single task By ID
 
 ```
 ...
@@ -139,9 +143,9 @@ const resolvers = {
 ```
 
 
+###### Browser (Client Request)
 
-``` (Client Request)
-
+```
 query getTaskById {
   task(taskId: 1) {
     id
@@ -152,7 +156,8 @@ query getTaskById {
 ```
 
 
-###### Get Field Label Resolver == Populate fields
+
+### Get Field Label Resolver == Populate fields
 
 ```
 ...
@@ -191,9 +196,9 @@ const resolvers = {
 ```
 
 
+###### Browser (Client Request)
 
-``` (Client Request)
-
+```
 query getTasks {
   tasks {
     id
@@ -208,7 +213,7 @@ query getTasks {
 ```
 
 
-###### Get Field Label Resolver on both on User.task and Task.users
+### Get Field Label Resolver on both on User.task and Task.users
 
 ```
 ...
@@ -252,8 +257,8 @@ const resolvers = {
 
 
 
-``` (Client Request)
-
+###### Browser (Client Request)
+```
 query getTasks {
   tasks {
     id
@@ -323,8 +328,8 @@ const resolvers = {
 
 
 
-``` (Client Request)
-
+###### Browser (Client Request)
+```
 mutation createTask {
 
   createTask(input: { 			// (1) Send Request with required fields as defined in Schema

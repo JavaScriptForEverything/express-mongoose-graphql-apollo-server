@@ -135,7 +135,8 @@ const resolvers = {
   Query : {
     tasks: () => tasks,
 
-    task: (_, args) => tasks.find( task => task.id === args.taskId ), 	// (2) override userId with userObject
+    // (2) override userId with userObject
+    task: (_, args) => tasks.find( task => task.id === args.taskId ),
   },
 
 }
@@ -186,8 +187,9 @@ const resolvers = {
     tasks: () => tasks,
   },
 
+  /* Field Label Resolver override Query Resolver's property:
+  	here userId with be overriden with userObject */
   Task: {
-  	// Field Label Resolver override Query Resolver's property: here userId with be overriden with userObject
 	user: ( parent ) => users.find(user => user.id === parent.userId )
   },
 
@@ -317,10 +319,14 @@ const resolvers = {
 
   Mutation: {
   	createTask: (_, args) => {
-  		const task = { ...args.input, id: Date.now() } 	// add id which is required field
-  		tasks.push(task) 																// add task into tasks array
+  		// add id which is required field so that match with createTaskInput schema
+  		const task = { ...args.input, id: Date.now() }
 
-  		return task 					// finally return modified task as response
+  		// add task into tasks array
+  		tasks.push(task)
+
+  		// finally return modified task as response
+  		return task
   	}
   },
 ...
@@ -332,13 +338,13 @@ const resolvers = {
 ```
 mutation createTask {
 
-  createTask(input: { 			// (1) Send Request with required fields as defined in Schema
+  createTask(input: { 		// (1) Send Request with required fields as defined in Schema
 
     name: "task one",
     completed: false,
     userId: 1
 
-  }) { 					// (2) Get response Back, with fields we want to
+  }) { 				// (2) Get response Back, with fields we want to
 
     id
     name

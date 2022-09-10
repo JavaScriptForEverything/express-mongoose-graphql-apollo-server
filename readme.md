@@ -1,6 +1,6 @@
-## Learing GraphQL with Express with ApolloServer
+### Learing GraphQL with Express with ApolloServer
 
-### Setup GraphQL with Express
+#### Setup GraphQL with Express
 
 ###### Install require packages:
 
@@ -12,7 +12,7 @@ $ yarn add 	express
 		cors 				: Enable CORS in API
 ```
 
-### /data/demo.js 	: Test Data
+##### /data/demo.js 	: Test Data
 
 ```
 exports.tasks = [
@@ -32,7 +32,7 @@ exports.users = [
 ```
 
 
-### server.js
+##### server.js
 ```
 const exporess = require('express')
 const cors = require('cors')
@@ -101,7 +101,7 @@ app.listen(PORT, () => console.log(`server running on port: ${PORT} on ${apolloS
 	.           	GET 	http://localhost:5000/graphql 		: GraphQL Endpoint
 
 
-### Get tasks from Query
+###### Get tasks from Query
 
 	Run the Query in GraphQL Server's client Request Section
 		. Ctrl + Enter 		: to run the Query
@@ -117,7 +117,7 @@ query ExampleQuery {
 ```
 
 
-### Get Single task By ID
+##### Get Single task By ID
 
 ```
 ...
@@ -157,7 +157,7 @@ query getTaskById {
 
 
 
-### Get Field Label Resolver == Populate fields
+##### Get Field Label Resolver == Populate fields
 
 ```
 ...
@@ -213,7 +213,7 @@ query getTasks {
 ```
 
 
-### Get Field Label Resolver on both on User.task and Task.users
+##### Get Field Label Resolver on both on User.task and Task.users
 
 ```
 ...
@@ -293,7 +293,7 @@ query getUserById {
 }
 ```
 
-###### Mutation: Create/Update/Delete Task or User
+##### Mutation: Create/Update/Delete Task or User
 
 ```
 ...

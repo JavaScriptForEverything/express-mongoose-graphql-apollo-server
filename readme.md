@@ -375,9 +375,7 @@ query getTasks {
 
 
 
----
 ## Modularize Schema and resolvers
----
 
 ### Product Directory
 
@@ -597,7 +595,7 @@ module.exports = resolver
 ##### Dummy Data for tesings
 ```
 ├── data
-│ └── demo.js
+  └── demo.js
 ```
 
 ###### /data/demo.js

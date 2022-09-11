@@ -679,3 +679,292 @@ query getUserById {
   }
 }
 ```
+
+
+
+## GraphQL with Mongoose (MongoDB Database)
+
+### Everything is same just modified files here
+
+```
+.
+├── app.js 			: (Modified)
+├── server.js 			: (Modified)
+│
+├── models 			: (Modified)
+│ ├── database.js
+│ ├── taskModel.js
+│ └── userModel.js
+│
+├── typeDefs
+│ ├── index.js
+│ ├── task.js
+│ └── user.js 			: (Modified)
+│
+├── resolvers
+│ ├── index.js
+│ ├── task.js
+│ └── user.js 			: (Modified)
+│
+├── package.json
+├── readme.md
+├── .env
+├── .gitignore
+└── yarn.lock
+
+```
+
+#### Main Server File
+##### /app.js
+
+```
+const exporess = require('express')
+const { ApolloServer } = require('apollo-server-express')
+const cors = require('cors')
+const path = require('path')
+
+const resolvers = require('./resolvers')
+const typeDefs = require('./typeDefs')
+
+const app = exporess()
+app.use( cors() )
+app.use( exporess.static(path.join( process.cwd(), 'public' ) ) )
+app.use( exporess.json() )
+// ---------
+
+
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers
+})
+
+apolloServer.start().then( () => {
+  apolloServer.applyMiddleware({ app, path: '/graphql' })
+})
+
+// ---------
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Hello server'
+  })
+})
+
+module.exports = { app, apolloServer }
+```
+
+##### /server.js
+
+```
+require('dotenv').config()
+const { connection } = require('mongoose')
+const database = require('./models/database')
+const { app, apolloServer } = require('./app')
+
+const PORT = process.env.PORT || 5000
+app.listen(PORT, async() => {
+	await database()
+
+	console.log(`api server running with database: http://${connection.host}:${PORT}${apolloServer.graphqlPath}`)
+})
+
+```
+
+##### /models
+
+```
+├── models 			: (Modified)
+│ ├── database.js
+│ ├── taskModel.js
+│ └── userModel.js
+│
+```
+
+##### /models/database.js
+```
+const { connect, connection } = require('mongoose')
+
+module.exports = () => {
+	if(connection.readyState >= 1) return
+
+	return connect(process.env.DB_LOCAL_URL)
+	.catch(err => console.log(`Database Connection failed: ${err.message}`))
+}
+```
+
+
+##### /models/userModel.js
+```
+const { Schema, model, models } = require('mongoose')
+const { isEmail } = require('validator')
+const bcryptjs = require('bcryptjs')
+
+const userSchema = new Schema({
+	name: {
+		type: String,
+		required: true,
+		trim: true,
+		minLength: 3
+	},
+	email: {
+		type: String,
+		unique: true,
+		required: true,
+		trim: true,
+		validate: isEmail
+	},
+	password: {
+		type: String,
+		required: true,
+	},
+	confirmPassword: {
+		type: String,
+		required: true,
+		validate: function (confirmPassword) { return this.password === confirmPassword }
+	},
+
+	// tasks: [{
+	// 	type: Schema.Types.ObjectId,
+	// 	ref: 'Task'
+	// }]
+
+}, {
+	timestamps: true,
+})
+
+
+userSchema.pre('save', async function(next) {
+	if( !this.isModified('password') ) return
+
+	this.password = await bcryptjs.hash(this.password, 12)
+	this.confirmPassword = undefined
+
+	next()
+})
+
+module.exports = models.User ||  model('User', userSchema)
+```
+
+
+##### /models/taskModel.js
+```
+const { Schema, model, models } = require('mongoose')
+
+const taskSchema = new Schema({
+	name: {
+		type: String,
+		required: true,
+		trim: true,
+		minLength: 3
+	},
+	completed: {
+		type: Boolean,
+		default: false,
+	},
+	user: {
+		type: Schema.Types.ObjectId,
+		ref: 'User',
+		required: true,
+	}
+
+}, {
+	timestamps: true
+})
+
+module.exports = models.Task || model('Task', taskSchema)
+```
+
+
+##### /typesDefs/user.js
+```
+const { gql } = require('apollo-server-express')
+
+const userTypeDefs = gql`
+  extend type Query {
+    users: [User!]
+    user(userId: ID!): User
+  }
+
+  extend type Mutation {
+  	signup(input: signupInput!): User
+  }
+
+  input signupInput {
+  	name: String!
+  	email: String!
+  	password: String!
+  	confirmPassword: String!
+  }
+
+  type User {
+    id: ID!
+    name: String
+    email: String
+    tasks: [Task!]
+  }
+`
+
+module.exports = userTypeDefs
+```
+
+##### /resolvers/user.js
+```
+const User = require('../models/userModel')
+
+const resolver = {
+  Query : {
+    users: async () => await User.find(),
+    // user: (_, args) => users.find( user => user.id === args.userId )
+    user: async(_, args) => await User.findById(args.userId)
+  },
+
+  Mutation: {
+  	signup: async (_, args) => {
+  		// args.input comes from typeDefs > Mutation. singup(input: ...)
+  		const user = await User.create(args.input)
+  		return user
+  	}
+  },
+
+  // User: {
+  // 	tasks: (parent) => tasks.filter( task => task.userId === parent.id)
+  // },
+
+
+}
+module.exports = resolver
+```
+
+
+###### Client Request
+```
+query getUsers {
+  users {
+    id
+    name
+    email
+  }
+}
+
+query getUserById {
+  user(userId: "631dadafcea963f202119466") {
+    id
+    name
+    email,
+
+  }
+}
+
+mutation signup {
+  signup(input: {
+    name: "riajul islam",
+    email: "abc@gmail.com",
+    password: "asdfasdf",
+    confirmPassword: "asdfasdf"
+  }) {
+    id
+    name
+    email
+  }
+}
+```

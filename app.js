@@ -5,6 +5,7 @@ const path = require('path')
 
 const resolvers = require('./resolvers')
 const typeDefs = require('./typeDefs')
+const context = require('./context')
 
 const app = exporess()
 app.use( cors() )
@@ -15,7 +16,14 @@ app.use( exporess.json() )
 
 const apolloServer = new ApolloServer({
   typeDefs,
-  resolvers
+  resolvers,
+  context: async ({ req }) => {
+  	await context.verifyToken(req) 		// add user to req object: 	req.user = user
+
+  	return {
+  		user: req.user  								// every resolverContext have user object.
+  	}
+  }
 })
 
 apolloServer.start().then( () => {

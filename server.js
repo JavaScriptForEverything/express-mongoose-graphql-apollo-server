@@ -1,104 +1,12 @@
 require('dotenv').config()
-const exporess = require('express')
-const { ApolloServer } = require('apollo-server-express')
-const cors = require('cors')
-const path = require('path')
-
-const resolvers = require('./resolvers')
-const typeDefs = require('./typeDefs')
-
-const app = exporess()
-app.use( cors() )
-app.use( exporess.static(path.join( process.cwd(), 'public' ) ) )
-app.use( exporess.json() )
-// ---------
-
-
-const apolloServer = new ApolloServer({
-  typeDefs,
-  resolvers
-})
-
-apolloServer.start().then( () => {
-  apolloServer.applyMiddleware({ app, path: '/graphql' })
-})
-
-// ---------
-app.get('/', (req, res, next) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'Hello server'
-  })
-})
+const { connection } = require('mongoose')
+const database = require('./models/database')
+const { app, apolloServer } = require('./app')
 
 const PORT = process.env.PORT || 5000
-app.listen(PORT, () => console.log(`server running on port: ${PORT} on ${apolloServer.graphqlPath}`))
+app.listen(PORT, async() => {
+	await database()
 
+	console.log(`api server running with database: http://${connection.host}:${PORT}${apolloServer.graphqlPath}`)
+})
 
-
-
-/* Client Request:
-
-mutation createTask {
-  createTask(input: {
-    name: "task one",
-    completed: false,
-    userId: 1
-  }) {
-    id
-    name
-    user {
-      id
-      name
-      email
-    }
-  }
-}
-
-query getTasks {
-  tasks {
-    id
-    name
-    user {
-      id
-      name
-      email
-    }
-  }
-}
-
-query getTaskById {
-  task(taskId: 1) {
-    id
-    name
-    completed
-    user {
-      id
-      name
-    }
-  }
-}
-
-query getUsers {
-  users {
-    id
-    name
-    email
-  }
-}
-
-query getUserById {
-  user(userId: 1) {
-    id
-    name
-    email,
-    tasks {
-      id
-      name
-      completed
-    }
-  }
-}
-
-
-*/

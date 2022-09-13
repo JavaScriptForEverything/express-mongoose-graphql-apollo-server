@@ -1,8 +1,18 @@
 const { Schema, model, models } = require('mongoose')
 
+/*
+{
+	name : 'task 1',
+	completed : true,
+	user: '2983741234abcd293452af'
+}
+
+*/
+
 const taskSchema = new Schema({
 	name: {
 		type: String,
+		unique: true,
 		required: true,
 		trim: true,
 		minLength: 3

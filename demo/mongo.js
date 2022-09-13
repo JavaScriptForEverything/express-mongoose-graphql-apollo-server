@@ -1,4 +1,9 @@
 // show dbs
 use graphql
 
-db.users.find().pretty()
+// users
+// db.users.find().pretty()
+
+// tasks
+db.tasks.find().pretty()
+// db.tasks.drop()

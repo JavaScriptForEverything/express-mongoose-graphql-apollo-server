@@ -7,6 +7,7 @@ const userTypeDefs = gql`
     user: User
   }
 
+
   extend type Mutation {
   	signup(input: signupInput!): User
   	login(input: loginInput!): Token
@@ -22,10 +23,10 @@ const userTypeDefs = gql`
     id: ID!
     name: String!
     email: String!
-    createdAt: Date!
-    updatedAt: Date!
     # createdAt: String!
     # updatedAt: String!
+    createdAt: Date!
+    updatedAt: Date!
     tasks: [Task!]
   }
 
@@ -34,7 +35,7 @@ const userTypeDefs = gql`
   	password: String!
   }
   type Token {
-  	token: String!
+  	token: String
   }
 `
 

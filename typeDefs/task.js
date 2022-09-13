@@ -2,25 +2,25 @@ const { gql } = require('apollo-server-express')
 
 const tasktypeDefs = gql`
   extend type Query {
-    tasks: [Task!]
+    tasks(skip: Int=0, limit: Int=5): [Task!]
     task(taskId: ID!): Task
   }
+  extend type Mutation {
+  	createTask(input: createTaskInput!): Task
+  }
 
+  input createTaskInput {
+  	name: String!
+  	completed: Boolean
+#  	user: ID 								# user === Task.user._id
+  }
   type Task {
     id: ID!
-    name: String
+    name: String!
     completed: Boolean
     user: User
   }
 
-  extend type Mutation {
-  	createTask(input: createTaskInput!): Task
-  }
-  input createTaskInput {
-  	name: String!
-  	completed: Boolean!
-  	userId: ID!
-  }
 `
 
 module.exports = tasktypeDefs

@@ -1,8 +1,9 @@
-const User = require('../models/userModel')
 const bcryptjs = require('bcryptjs')
 const { combineResolvers } = require('graphql-resolvers')
-const { protect } = require('./middleware')
 const jwt = require('jsonwebtoken')
+const { protect } = require('./middleware')
+const User = require('../models/userModel')
+const Task = require('../models/taskModel')
 
 const resolver = {
   Query : {
@@ -19,21 +20,21 @@ const resolver = {
 
   Mutation: {
   	signup: async (_, args) => { 	// args.input comes from typeDefs > Mutation. singup(input: ...)
-  		const user = await User.create(args.input)
+  		const user = await User.create({ ...args.input }) 	// => args.input === req.body
   		return user
   	},
 
   	login: async (_, { input: { email, password } }) => {
   		const user = await User.findOne({ email })
-  		// if(!findUser) return
+  		if(!user) throw new Error('please signup first.')
 
   		const isValidate = await bcryptjs.compare( password, user.password )
-  		if(!isValidate) console.log('not validate')
+  		if(!isValidate) throw new Error('email or password is incorrent')
 
   		const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRES })
   		return { token }
   		/* why we return token as object ?
-  				- Because in our schema we set token as object.
+  				- Because in our schema we set token as object. 	type Token { token: String }
   		*/
   	}
   },
@@ -41,11 +42,15 @@ const resolver = {
   User: {
   	// tasks: (parent) => tasks.filter( task => task.userId === parent.id)
 
-  	// createdAt: (parent) => {
-  	// 	console.log(parent)
-  	// 	// return new Date( parent.createdAt )
-  	// 	return new Date( Date.UTC( parent.createdAt ))
-  	// }
+
+		/* Why instead of populate user from user.id in mongoose Model, it find by userId in GraphQL again ?
+		  	-
+		*/
+  	tasks: async (user) => { 	 	// Every fields has it parent object, to which this field bellongs to.
+  		const tasks = await Task.find({ user: user.id })
+  		return tasks
+  	}
+
   },
 
 

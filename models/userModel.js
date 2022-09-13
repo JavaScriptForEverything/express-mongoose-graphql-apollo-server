@@ -2,6 +2,14 @@ const { Schema, model, models } = require('mongoose')
 const { isEmail } = require('validator')
 const bcryptjs = require('bcryptjs')
 
+/*
+{
+	name: 'riajul islam',
+	email: 'abc@gmail.com',
+	password: 'asdfasdf',
+	confirmPassword: 'asdfasdf'
+}
+*/
 
 const userSchema = new Schema({
 	name: {

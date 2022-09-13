@@ -23,7 +23,8 @@ const apolloServer = new ApolloServer({
   	return {
   		user: req.user  								// every resolverContext have user object.
   	}
-  }
+  },
+  formatError: (err) => ({ message: err.message }) 		// Reformat default error object
 })
 
 apolloServer.start().then( () => {

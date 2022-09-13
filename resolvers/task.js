@@ -1,23 +1,40 @@
-const { users, tasks } = require('../data/demo')
+const User = require('../models/userModel')
+const Task = require('../models/taskModel')
+
 
 const resolver = {
   Query : {
-    tasks: () => tasks,
-    task: (_, args) => tasks.find( task => task.id === args.taskId ),
+    tasks: async (_, { skip, limit}) => {
+    	const tasks = await Task.find().skip(skip).limit(limit).populate('user')
+    	// const tasks = await Task.find().skip(skip).limit(limit) 		// instead of populate here override in fields
+    	return tasks
+    },
+    task: async (_, { taskId }) => {
+    	const task = await Task.findOne({ _id: taskId })
+
+    	return {
+    		...task,
+    		id: task.id.toString()
+    	}
+    }
   },
 
-  Task: {
-		user: ( parent ) => users.find(user => user.id === parent.userId )
-  },
 
   Mutation: {
-  	createTask: (_, args) => {
-  		const task = { ...args.input, id: Date.now() } 		// add id which is required field
-  		tasks.push(task) 																	// add task into tasks array
+  	createTask: async (_, { input }, { user }) => {
+  		const task = await Task.create({ ...input, user: user.id }) 	// input { name: completed, user: ObjectId() }
+  		return {
+  			...task,
+  			id: task.id.toString(),
+  			name: task.name.toString(),
+  		}
 
-  		return task 																			// finally return modified task as response
+
   	}
   },
 
+  Task: {
+		// user: async (_, __, { user }) => await User.findById(user.id)
+  },
 }
 module.exports = resolver

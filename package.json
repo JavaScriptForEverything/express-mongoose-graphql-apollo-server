@@ -1,5 +1,5 @@
 {
-  "name": "graphql-apollo-api",
+  "name": "express-mongoose-graphql-apollo-server",
   "version": "1.0.0",
   "main": "server.js",
   "license": "MIT",

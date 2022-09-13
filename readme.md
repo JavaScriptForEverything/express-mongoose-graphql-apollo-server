@@ -1,4 +1,11 @@
-### Learing GraphQL with Express with ApolloServer
+### Express, Mongoose and GraphQL with ApolloServer
+
+<img
+	width = "100%"
+	src="https://github.com/JavaScriptForEverything/express-mongoose-graphql-apollo-server/blob/master/public/express-mongoose-graphql-apollo-server.png"
+	alt="BannerForGit_Stripe-MaterialUI.png"
+/>
+<br />
 
 #### Setup GraphQL with Express
 
